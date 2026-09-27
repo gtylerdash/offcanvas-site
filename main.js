@@ -1,5 +1,9 @@
 gsap.registerPlugin(ScrollTrigger);
 
+/* Touch devices get tap/swipe gallery behaviors instead of hover.
+   ?touch=1 forces it for desktop QA. */
+const isTouch = matchMedia("(pointer: coarse)").matches || new URLSearchParams(location.search).has("touch");
+
 /* ---------- Preloader ---------- */
 const preloader = document.getElementById("preloader");
 window.addEventListener("load", () => {
@@ -95,7 +99,8 @@ ScrollTrigger.create({
     const st = Math.min(1, Math.max(0, (p - 0.45) / 0.25));
     if (focusedBoard === null) {
       sceneZoom.classList.add("free");
-      setStageTransform(scaleAboutViewportCenter(1.22 - st * 0.22));
+      sceneScale = 1.22 - st * 0.22;
+      setStageTransform(scaleAboutViewportCenter(sceneScale));
     }
     galleryActive = p > 0.55;
     scene.classList.toggle("active", galleryActive);
@@ -118,11 +123,19 @@ function layoutStage() {
   sceneZoom.style.height = stageH + "px";
 }
 layoutStage();
-window.addEventListener("resize", () => { layoutStage(); if (focusedBoard === null) setStageTransform(scaleAboutViewportCenter(1)); });
+window.addEventListener("resize", () => { layoutStage(); panX = 0; if (focusedBoard === null) setStageTransform(scaleAboutViewportCenter(sceneScale)); });
 
+/* panX: horizontal swipe offset (touch only, stays 0 on desktop).
+   tx is clamped so the stage always covers the viewport. */
+let panX = 0;
+let sceneScale = 1.22;
 function scaleAboutViewportCenter(s) {
   const cx = innerWidth / 2, cy = innerHeight / 2;
-  return `translate(${cx - s * (cx - baseTx)}px, ${cy - s * (cy - baseTy)}px) scale(${s})`;
+  let tx = cx - s * (cx - baseTx) + panX;
+  const ty = cy - s * (cy - baseTy);
+  const minTx = innerWidth - s * stageW;
+  if (minTx < 0) tx = Math.min(0, Math.max(minTx, tx));
+  return `translate(${tx}px, ${ty}px) scale(${s})`;
 }
 function setStageTransform(t) { sceneZoom.style.transform = t; }
 setStageTransform(scaleAboutViewportCenter(1.22));
@@ -146,6 +159,7 @@ let lastPointerX = 0, lastPointerY = 0;
 
 function focusBoard(i) {
   focusedBoard = i;
+  focusedAt = performance.now();
   focusAnchorX = lastPointerX;
   focusAnchorY = lastPointerY;
   scene.classList.add("focused");
@@ -190,10 +204,12 @@ function unfocusBoard() {
 let hoverTimer = null;
 let hoverTarget = null;
 let unfocusedAt = 0;
+let focusedAt = 0;
 
 scene.addEventListener("pointermove", (e) => {
   lastPointerX = e.clientX;
   lastPointerY = e.clientY;
+  if (isTouch) return; // touch: tap/swipe handlers below, no hover logic
   if (!galleryActive) return;
   if (focusedBoard === null) {
     if (performance.now() - unfocusedAt < 260) return; // cooldown after deselect
@@ -218,17 +234,70 @@ scene.addEventListener("pointermove", (e) => {
   }
 });
 
-scene.addEventListener("click", () => {
-  if (galleryActive && focusedBoard !== null) {
-    window.waterTo(`checkout.html?board=${GALLERY_BOARDS[focusedBoard].slug}`);
+scene.addEventListener("click", (e) => {
+  if (!galleryActive || focusedBoard === null) return;
+  if (suppressClick) { suppressClick = false; return; }
+  if (isTouch) {
+    // ignore the tap that just focused; then: tap the board = collect,
+    // tap elsewhere = put it back
+    if (performance.now() - focusedAt < 500) return;
+    if (Math.abs(e.clientX - focusedScreenX) < innerWidth * 0.3) {
+      window.waterTo(`checkout.html?board=${GALLERY_BOARDS[focusedBoard].slug}`);
+    } else {
+      unfocusBoard();
+    }
+    return;
   }
+  window.waterTo(`checkout.html?board=${GALLERY_BOARDS[focusedBoard].slug}`);
 });
 
 document.querySelectorAll(".hotspot").forEach((h) => {
   const i = parseInt(h.dataset.i, 10);
-  h.addEventListener("focus", () => { if (galleryActive) focusBoard(i); });
-  h.addEventListener("blur", () => { if (focusedBoard === i) unfocusBoard(); });
+  h.addEventListener("focus", () => { if (!isTouch && galleryActive) focusBoard(i); });
+  h.addEventListener("blur", () => { if (!isTouch && focusedBoard === i) unfocusBoard(); });
+  h.addEventListener("click", (e) => {
+    if (!isTouch || !galleryActive) return;
+    e.stopPropagation(); // keep the focusing tap from reaching the scene
+    if (suppressClick) { suppressClick = false; return; } // it was a swipe, not a tap
+    if (focusedBoard !== i) focusBoard(i);
+  });
 });
+
+/* Board chip is tappable/clickable everywhere */
+chip.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (focusedBoard !== null) window.waterTo(`checkout.html?board=${GALLERY_BOARDS[focusedBoard].slug}`);
+});
+
+/* ---------- Touch: swipe to pan the gallery, tap to light ---------- */
+let suppressClick = false;
+if (isTouch) {
+  galleryHint.textContent = "✿ swipe to look around — tap a board to light it up ✿";
+  document.querySelector(".chip-cta").textContent = "tap to collect →";
+
+  let dragging = false, dragStartX = 0, dragStartPan = 0;
+  scene.addEventListener("pointerdown", (e) => {
+    suppressClick = false;
+    if (!galleryActive || focusedBoard !== null) return;
+    dragging = true;
+    dragStartX = e.clientX;
+    dragStartPan = panX;
+  });
+  scene.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - dragStartX;
+    if (Math.abs(dx) > 8) suppressClick = true;
+    const s = sceneScale;
+    const base = innerWidth / 2 - s * (innerWidth / 2 - baseTx);
+    const minTx = Math.min(0, innerWidth - s * stageW);
+    panX = Math.min(0 - base, Math.max(minTx - base, dragStartPan + dx));
+    sceneZoom.classList.add("free");
+    setStageTransform(scaleAboutViewportCenter(s));
+  });
+  const endDrag = () => { dragging = false; };
+  scene.addEventListener("pointerup", endDrag);
+  scene.addEventListener("pointercancel", endDrag);
+}
 
 /* ---------- Soft reveal-on-scroll ---------- */
 document.querySelectorAll(".reveal").forEach((el) => {
@@ -288,6 +357,22 @@ let lastY = 0;
 const nav = document.getElementById("nav");
 window.addEventListener("scroll", () => {
   const y = window.scrollY;
-  nav.classList.toggle("hidden", y > lastY && y > 300);
+  nav.classList.toggle("hidden", y > lastY && y > 300 && !document.body.classList.contains("menu-open"));
   lastY = y;
 }, { passive: true });
+
+/* ---------- Mobile menu ---------- */
+const burger = document.getElementById("navBurger");
+const mobileMenu = document.getElementById("mobileMenu");
+if (burger && mobileMenu) {
+  const setMenu = (open) => {
+    mobileMenu.classList.toggle("open", open);
+    burger.classList.toggle("open", open);
+    burger.setAttribute("aria-expanded", open);
+    burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    document.body.classList.toggle("menu-open", open);
+    if (open) nav.classList.remove("hidden");
+  };
+  burger.addEventListener("click", () => setMenu(!mobileMenu.classList.contains("open")));
+  mobileMenu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setMenu(false)));
+}
