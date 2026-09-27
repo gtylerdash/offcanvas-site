@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OFF CANVAS — Original art on unexpected forms. Always 1/1.</title>
+<meta name="description" content="Hand-painted, one-of-one works of art on unexpected forms. Founded by artist Riley Morrison. Original art. Unexpected forms. Always 1/1.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Preloader -->
+<div class="preloader" id="preloader">
+  <div class="preloader-blob">
+    <span class="preloader-word">Off <em>Canvas</em></span>
+  </div>
+  <div class="preloader-line"><span></span></div>
+</div>
+
+<!-- Nav -->
+<nav class="nav" id="nav">
+  <a href="#top" class="nav-logo">Off <em>Canvas</em></a>
+  <div class="nav-links">
+    <a href="#top">Gallery</a>
+    <a href="#story">Story</a>
+    <a href="#collection">Collection</a>
+    <a href="#commission" class="nav-cta">Commission</a>
+  </div>
+</nav>
+
+<!-- ============ EXPERIENCE: paint film → zoom into 3D gallery ============ -->
+<section class="experience" id="top">
+  <div class="exp-sticky">
+
+    <!-- Rendered gallery scene (behind the film) -->
+    <div class="scene" id="scene">
+      <div class="scene-zoom" id="sceneZoom">
+        <img class="scene-img" src="assets/gallery-scene.jpg" alt="Gallery of hand-painted surfboards">
+        <img class="scene-img scene-lit" data-lit="0" src="assets/gallery-lit-0.jpg" alt="" aria-hidden="true">
+        <img class="scene-img scene-lit" data-lit="1" src="assets/gallery-lit-1.jpg" alt="" aria-hidden="true">
+        <img class="scene-img scene-lit" data-lit="2" src="assets/gallery-lit-2.jpg" alt="" aria-hidden="true">
+        <img class="scene-img scene-lit" data-lit="3" src="assets/gallery-lit-3.jpg" alt="" aria-hidden="true">
+        <button class="hotspot" data-i="0" style="left:16.5%; width:9%;" aria-label="Hibiscus Trio — light it up"></button>
+        <button class="hotspot" data-i="1" style="left:35.5%; width:9%;" aria-label="Sakura — light it up"></button>
+        <button class="hotspot" data-i="2" style="left:55.5%; width:9%;" aria-label="Stargazer — light it up"></button>
+        <button class="hotspot" data-i="3" style="left:74.5%; width:9%;" aria-label="Wildflower — light it up"></button>
+      </div>
+    </div>
+
+    <!-- Paint film layer (frame-scrubbed) -->
+    <div class="paint-layer" id="paintLayer">
+      <canvas id="paintCanvas"></canvas>
+      <div class="paint-counter" aria-hidden="true"><span id="paintPct">0</span>% painted</div>
+      <header class="exp-head" id="expHead">
+        <h1>Off <em>Canvas</em></h1>
+        <p>Original art on unexpected forms — always <strong>1/1</strong>.</p>
+        <p class="exp-hint">✿ scroll to paint ✿</p>
+      </header>
+      <div class="film-stage film-stage--1"><p>Every piece begins <em>blank.</em></p></div>
+      <div class="film-stage film-stage--2"><p>Painted by hand, <em>stroke by stroke.</em></p></div>
+      <div class="film-stage film-stage--3"><p>Signed. Marked. <em>Always 1/1.</em></p></div>
+    </div>
+
+    <!-- Gallery UI overlays -->
+    <div class="gallery-ui" id="galleryUi">
+      <p class="gallery-hint-pill" id="galleryHint">✿ hover a board to light it up — click to collect ✿</p>
+      <div class="board-chip" id="boardChip">
+        <h4 id="chipName"></h4>
+        <p id="chipDetail"></p>
+        <span class="chip-price" id="chipPrice"></span>
+        <span class="chip-cta">click to collect →</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Water transition overlay -->
+<div class="water-wipe" id="waterWipe" aria-hidden="true">
+  <svg class="wave wave--1" viewBox="0 0 1440 200" preserveAspectRatio="none"><path d="M0,96 C240,160 480,32 720,96 C960,160 1200,32 1440,96 L1440,200 L0,200 Z"/></svg>
+  <svg class="wave wave--2" viewBox="0 0 1440 200" preserveAspectRatio="none"><path d="M0,64 C260,140 520,20 780,90 C1040,160 1240,40 1440,80 L1440,200 L0,200 Z"/></svg>
+  <svg class="wave wave--3" viewBox="0 0 1440 200" preserveAspectRatio="none"><path d="M0,80 C220,20 500,150 760,70 C1020,-10 1240,120 1440,60 L1440,200 L0,200 Z"/></svg>
+</div>
+
+<!-- Marquee -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>original art ✿ unexpected forms ✿ always 1/1 ✿ hand-painted ✿ signed by Riley ✿ no prints ✿ no reproductions ✿&nbsp;</span>
+    <span>original art ✿ unexpected forms ✿ always 1/1 ✿ hand-painted ✿ signed by Riley ✿ no prints ✿ no reproductions ✿&nbsp;</span>
+  </div>
+</div>
+
+<!-- ============ MANIFESTO ============ -->
+<section class="manifesto">
+  <span class="bgword" aria-hidden="true">art</span>
+  <p class="section-label reveal">the idea</p>
+  <h2 class="manifesto-text reveal">
+    Art doesn't belong on just one kind of canvas. Off Canvas takes familiar
+    objects and turns them into something <em>completely original.</em>
+  </h2>
+</section>
+
+<!-- ============ STORY ============ -->
+<section class="story" id="story">
+  <div class="story-card">
+    <div class="story-media reveal">
+      <img src="assets/boards/yellow-lily-cut.png" alt="Hand-painted yellow lily surfboard by Riley Morrison" loading="lazy">
+      <span class="story-media-caption">Wildflower — acrylic on maple</span>
+    </div>
+    <div class="story-copy">
+      <p class="section-label reveal">the artist</p>
+      <h3 class="reveal">Founded by artist <em>Riley Morrison</em></h3>
+      <p class="reveal">Off Canvas creates hand-painted, one-of-one works of art on unexpected
+      forms — from surfboards and sports pieces to traditional canvas and whatever comes next.</p>
+      <p class="reveal">Every piece starts by hand. Some works are born from Riley's own inspiration;
+      others are commissioned and designed around the people, places, colors and stories
+      that matter to their owners.</p>
+      <p class="reveal">Each finished work is signed by Riley and marked <strong>1/1</strong> —
+      a promise that it is, and always will be, the only one.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section class="process" id="process">
+  <p class="section-label reveal">the process</p>
+  <h2 class="process-title reveal">By hand. <em>Every time.</em></h2>
+  <div class="process-grid">
+    <figure class="process-card reveal">
+      <span class="process-num">1</span>
+      <video src="assets/clip-brush-dip.mp4" muted loop playsinline preload="metadata"></video>
+      <figcaption>the pigment</figcaption>
+    </figure>
+    <figure class="process-card reveal">
+      <span class="process-num">2</span>
+      <video src="assets/clip-petal-stroke.mp4" muted loop playsinline preload="metadata"></video>
+      <figcaption>the stroke</figcaption>
+    </figure>
+    <figure class="process-card reveal">
+      <span class="process-num">3</span>
+      <video src="assets/clip-detail-pan.mp4" muted loop playsinline preload="metadata"></video>
+      <figcaption>the detail</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee marquee--green" aria-hidden="true">
+  <div class="marquee-track">
+    <span>$499 per board ✿ commissions open ✿ your story, painted once ✿ $499 per board ✿ commissions open ✿ your story, painted once ✿&nbsp;</span>
+    <span>$499 per board ✿ commissions open ✿ your story, painted once ✿ $499 per board ✿ commissions open ✿ your story, painted once ✿&nbsp;</span>
+  </div>
+</div>
+
+<!-- ============ COLLECTION ============ -->
+<section class="collection" id="collection">
+  <div class="collection-head">
+    <p class="section-label reveal">the collection</p>
+    <h2 class="reveal">Original works, <em>ready to hang.</em></h2>
+    <p class="collection-note reveal">Each board is an original 1/1 — hand-painted, signed, and never repeated.</p>
+  </div>
+  <div class="pieces">
+    <article class="piece" id="piece-hibiscus" data-board="hibiscus">
+      <div class="piece-blob piece-blob--pink"></div>
+      <img class="piece-img" src="assets/boards/hibiscus-cut.png" alt="Hibiscus Trio — hand-painted surfboard">
+      <div class="piece-meta">
+        <h4>Hibiscus Trio</h4>
+        <p>acrylic on maple · signed · 1/1</p>
+        <span class="piece-price">$499 →</span>
+      </div>
+    </article>
+    <article class="piece" id="piece-sakura" data-board="sakura">
+      <div class="piece-blob piece-blob--green"></div>
+      <img class="piece-img" src="assets/boards/cherry-blossom-cut.png" alt="Sakura — hand-painted surfboard">
+      <div class="piece-meta">
+        <h4>Sakura</h4>
+        <p>acrylic on maple · signed · 1/1</p>
+        <span class="piece-price">$499 →</span>
+      </div>
+    </article>
+    <article class="piece" id="piece-stargazer" data-board="stargazer">
+      <div class="piece-blob piece-blob--pink"></div>
+      <img class="piece-img" src="assets/boards/pink-lilies-cut.png" alt="Stargazer — hand-painted surfboard">
+      <div class="piece-meta">
+        <h4>Stargazer</h4>
+        <p>acrylic on maple · signed · 1/1</p>
+        <span class="piece-price">$499 →</span>
+      </div>
+    </article>
+    <article class="piece" id="piece-wildflower" data-board="wildflower">
+      <div class="piece-blob piece-blob--green"></div>
+      <img class="piece-img" src="assets/boards/yellow-lily-cut.png" alt="Wildflower — hand-painted surfboard">
+      <div class="piece-meta">
+        <h4>Wildflower</h4>
+        <p>acrylic on maple · signed · 1/1</p>
+        <span class="piece-price">$499 →</span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ COMMISSION ============ -->
+<section class="commission" id="commission">
+  <div class="commission-card">
+    <p class="section-label reveal">commissions</p>
+    <h2 class="reveal">Your story. <em>Painted once.</em></h2>
+    <p class="reveal">Commission a piece designed around the people, places, colors and stories
+    that matter to you. It will never be painted again.</p>
+    <a class="btn-clay reveal" href="mailto:hello@offcanvas.art?subject=Commission%20inquiry">Start a commission ✿</a>
+    <p class="commission-fine reveal">boards from $499 · signed &amp; marked 1/1</p>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="footer-mark">Off <em>Canvas</em></div>
+  <p class="footer-tag">Original art. Unexpected forms. <em>Always 1/1.</em></p>
+  <p class="footer-copy">© 2026 Off Canvas · OffCanvas.art · Art by Riley Morrison</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
